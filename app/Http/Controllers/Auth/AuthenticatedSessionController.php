@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Jobs\SendMailJob;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -32,6 +33,20 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        SendMailJob::dispatch([
+            'email_from'      => 'do_not_reply@appsolution4u.com',
+            'name_from'       => 'AppSolution Assistant',
+            'email_recipient' => $user->email, // from the logged-in user
+            'name_recipient'  => $user->name,  // from the logged-in user
+            'subject'         => 'New Loging to AppSolution4u Detected',
+            'template_id'     => 6759039,
+            'variables'       => [
+                'ip_address' => $request->ip()
+            ],
+        ]);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
