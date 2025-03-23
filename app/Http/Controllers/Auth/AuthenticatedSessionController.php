@@ -35,6 +35,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
+        $user->last_login_at = now();
+        $user->save();
 
         SendMailJob::dispatch([
             'email_from'      => 'do_not_reply@appsolution4u.com',
