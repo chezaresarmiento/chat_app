@@ -32,7 +32,7 @@ class MessageController extends Controller
             ['cluster' => env('PUSHER_APP_CLUSTER')]
         );
 
-        $data=['name'=>$user->name,'content'=>$message->content,'room'=>$data['room']];
+        $data=['id'=>$message->id,'name'=>$user->name,'content'=>$message->content,'room'=>$data['room'],'created_at'=>$message->created_at->format('M d, Y h:i')];
         $pusher->trigger($data["room"], 'MessageSent', $data);
         
         return response()->json($message, 201);
