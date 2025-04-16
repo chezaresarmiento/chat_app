@@ -29,7 +29,7 @@ import { Head } from "@inertiajs/vue3";
                 <br />
                 <div class="h2">Welcome to {{ activeRoom.name }}</div>
                 <br />
-                <div class="chat-window">
+                <div ref="chatWindow" class="chat-window">
                   <div v-for="(msg, index) in messages" :key="index" class="chat-message">
                     <strong>
                       <span v-if="msg?.created_at"> [{{ msg.created_at }}] </span>
@@ -90,6 +90,7 @@ export default {
       // Subscribe to the new room's channel.
       this.roomChannel = window.Echo.channel(room.channel).listen(".MessageSent", (e) => {
         this.messages.push(e);
+        this.scrollToBottom();
       });
 
       this.getMessages(room.channel);
@@ -118,10 +119,19 @@ export default {
         .then((response) => {
           //log("Fetched messages:", response.data);
           this.messages = response.data;
+          this.scrollToBottom();
         })
         .catch((error) => {
           console.error("Error fetching messages:", error);
         });
+    },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const chatWindow = this.$refs.chatWindow;
+        if (chatWindow) {
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+      });
     },
   },
   mounted() {},
