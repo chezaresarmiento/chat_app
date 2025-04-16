@@ -13,6 +13,7 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Jobs\SendMailJob;
+use Illuminate\Support\Facades\Session;
 
 class RegisteredUserController extends Controller
 {
@@ -58,6 +59,8 @@ class RegisteredUserController extends Controller
                 "name_recipient" => $request->name,
             ]
         ]);
+
+        Session::put('last_login',now());
 
         return redirect(route('dashboard', absolute: false));
     }
